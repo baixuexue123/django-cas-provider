@@ -3,7 +3,7 @@ from django.conf import settings
 __all__ = []
 
 _DEFAULTS = {
-    'CAS_TICKET_EXPIRATION': 5, # In minutes
+    'CAS_TICKET_EXPIRATION': 5,  # In minutes
 }
 
 for key, value in _DEFAULTS.iteritems():

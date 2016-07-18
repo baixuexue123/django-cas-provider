@@ -11,11 +11,11 @@ from utils import create_service_ticket
 
 __all__ = ['login', 'validate', 'logout']
 
-def login(request, template_name='cas/login.html', success_redirect=None ):
-    if not success_redirect:
-        success_redirect = settings.LOGIN_REDIRECT_URL
-    if not success_redirect:
-        success_redirect = '/accounts/profile/'
+
+def login(request, template_name='cas/login.html', success_redirect=None):
+    if success_redirect is None:
+        success_redirect = settings.LOGIN_REDIRECT_URL or '/accounts/profile/'
+
     service = request.GET.get('service', None)
     if request.user.is_authenticated():
         if service is not None:
@@ -35,7 +35,7 @@ def login(request, template_name='cas/login.html', success_redirect=None ):
         
         try:
             login_ticket = LoginTicket.objects.get(ticket=lt)
-        except:
+        except Exception:
             errors.append('Login ticket expired. Please try again.')
         else:
             login_ticket.delete()
@@ -59,7 +59,8 @@ def login(request, template_name='cas/login.html', success_redirect=None ):
                     errors.append('Incorrect username and/or password.')
     form = LoginForm(service)
     return render_to_response(template_name, {'form': form, 'errors': errors}, context_instance=RequestContext(request))
-    
+
+
 def validate(request):
     service = request.GET.get('service', None)
     ticket_string = request.GET.get('ticket', None)
@@ -69,10 +70,11 @@ def validate(request):
             username = ticket.user.username
             ticket.delete()
             return HttpResponse("yes\n%s\n" % username)
-        except:
+        except Exception:
             pass
     return HttpResponse("no\n\n")
-    
+
+
 def logout(request, template_name='cas/logout.html'):
     url = request.GET.get('url', None)
     auth_logout(request)

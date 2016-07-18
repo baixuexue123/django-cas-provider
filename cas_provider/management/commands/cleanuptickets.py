@@ -15,6 +15,7 @@ import datetime
 
 from cas_provider.models import ServiceTicket, LoginTicket
 
+
 class Command(NoArgsCommand):
     help = "Delete expired service tickets from the database"
 
