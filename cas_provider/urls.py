@@ -1,6 +1,7 @@
-from django.conf.urls import *
+# -*- coding: utf-8 -*-
+from django.conf.urls import url, patterns
 
-from views import *
+from views import login, validate, logout
 
 urlpatterns = patterns('',
     url(r'^login/', login),

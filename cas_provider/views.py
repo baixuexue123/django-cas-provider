@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -8,8 +9,6 @@ from django.conf import settings
 from forms import LoginForm
 from models import ServiceTicket, LoginTicket
 from utils import create_service_ticket
-
-__all__ = ['login', 'validate', 'logout']
 
 
 def login(request, template_name='cas/login.html', success_redirect=None):
