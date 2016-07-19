@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.conf import settings
 
-from .utils import create_service_ticket
+from .utils import add_qs, create_service_ticket
 from .forms import LoginForm
 from .models import ServiceTicket, LoginTicket
 
@@ -21,10 +21,7 @@ def login(request, template_name='cas/login.html', success_redirect=None):
     if request.user.is_authenticated():
         if service is not None:
             ticket = create_service_ticket(request.user, service)
-            if service.find('?') == -1:
-                return HttpResponseRedirect(service + '?ticket=' + ticket.ticket)
-            else:
-                return HttpResponseRedirect(service + '&ticket=' + ticket.ticket)
+            return HttpResponseRedirect(add_qs(service, ticket=ticket.ticket))
         else:
             return HttpResponseRedirect(success_redirect)
 
@@ -47,11 +44,7 @@ def login(request, template_name='cas/login.html', success_redirect=None):
                     auth_login(request, user)
                     if service is not None:
                         ticket = create_service_ticket(user, service)
-                        # Check to see if we already have a query string
-                        if service.find('?') == -1:
-                            return HttpResponseRedirect(service + '?ticket=' + ticket.ticket)
-                        else:
-                            return HttpResponseRedirect(service + '&ticket=' + ticket.ticket)
+                        return HttpResponseRedirect(add_qs(service, ticket=ticket.ticket))
                     else:
                         return HttpResponseRedirect(success_redirect)
                 else:
