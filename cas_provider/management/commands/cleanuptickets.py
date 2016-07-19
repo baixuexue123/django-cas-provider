@@ -6,12 +6,11 @@ Calls ``ServiceTickets.objects.delete_expired_users()``, which
 contains the actual logic for determining which accounts are deleted.
 
 """
+import datetime
 
 from django.core.management.base import NoArgsCommand
 from django.core.management.base import CommandError
 from django.conf import settings
-
-import datetime
 
 from cas_provider.models import ServiceTicket, LoginTicket
 

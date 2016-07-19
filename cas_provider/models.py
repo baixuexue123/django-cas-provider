@@ -6,16 +6,16 @@ from django.contrib.auth.models import User
 class ServiceTicket(models.Model):
     user = models.ForeignKey(User)
     service = models.URLField(verify_exists=False)
-    ticket = models.CharField(max_length=256)
-    created = models.DateTimeField(auto_now=True)
+    ticket = models.CharField(max_length=255)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return "%s (%s) - %s" % (self.user.username, self.service, self.created)
+        return "%s (%s) - %s" % (self.user.username, self.service, self.created_on)
 
 
 class LoginTicket(models.Model):
     ticket = models.CharField(max_length=32)
-    created = models.DateTimeField(auto_now=True)
-    
+    created_on = models.DateTimeField(auto_now_add=True)
+
     def __unicode__(self):
-        return "%s - %s" % (self.ticket, self.created)
+        return "%s - %s" % (self.ticket, self.created_on)

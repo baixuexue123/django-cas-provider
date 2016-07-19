@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from django import forms
 
-from utils import create_login_ticket
+from .utils import create_login_ticket
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=30)
+    username = forms.CharField(max_length=32)
     password = forms.CharField(widget=forms.PasswordInput)
     # warn = forms.BooleanField(required=False)  # TODO: Implement
     lt = forms.CharField(widget=forms.HiddenInput, initial=create_login_ticket)

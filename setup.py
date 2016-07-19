@@ -1,4 +1,3 @@
-
 from setuptools import setup, find_packages
 
 setup(
@@ -10,5 +9,5 @@ setup(
     url='http://nitron.org/',
     packages=find_packages(),
     zip_safe=False,
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'django>=1.8'],
 )

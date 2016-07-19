@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -6,9 +8,9 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.conf import settings
 
-from forms import LoginForm
-from models import ServiceTicket, LoginTicket
-from utils import create_service_ticket
+from .utils import create_service_ticket
+from .forms import LoginForm
+from .models import ServiceTicket, LoginTicket
 
 
 def login(request, template_name='cas/login.html', success_redirect=None):
@@ -25,16 +27,17 @@ def login(request, template_name='cas/login.html', success_redirect=None):
                 return HttpResponseRedirect(service + '&ticket=' + ticket.ticket)
         else:
             return HttpResponseRedirect(success_redirect)
+
     errors = []
     if request.method == 'POST':
         username = request.POST.get('username', None)
         password = request.POST.get('password', None)
         service = request.POST.get('service', None)
         lt = request.POST.get('lt', None)
-        
+
         try:
             login_ticket = LoginTicket.objects.get(ticket=lt)
-        except Exception:
+        except LoginTicket.DoesNotExist:
             errors.append('Login ticket expired. Please try again.')
         else:
             login_ticket.delete()
@@ -44,7 +47,6 @@ def login(request, template_name='cas/login.html', success_redirect=None):
                     auth_login(request, user)
                     if service is not None:
                         ticket = create_service_ticket(user, service)
-
                         # Check to see if we already have a query string
                         if service.find('?') == -1:
                             return HttpResponseRedirect(service + '?ticket=' + ticket.ticket)
@@ -55,9 +57,10 @@ def login(request, template_name='cas/login.html', success_redirect=None):
                 else:
                     errors.append('This account is disabled.')
             else:
-                    errors.append('Incorrect username and/or password.')
+                errors.append('Incorrect username and/or password.')
     form = LoginForm(service)
-    return render_to_response(template_name, {'form': form, 'errors': errors}, context_instance=RequestContext(request))
+    return render_to_response(template_name, {'form': form, 'errors': errors},
+                              context_instance=RequestContext(request))
 
 
 def validate(request):
