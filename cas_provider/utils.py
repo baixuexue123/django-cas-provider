@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from random import Random
 import string
+from random import Random
 
-from models import ServiceTicket, LoginTicket
+from .models import ServiceTicket, LoginTicket
 
 
 def _generate_string(length=8, chars=string.ascii_letters + string.digits):

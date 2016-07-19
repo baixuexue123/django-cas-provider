@@ -69,11 +69,12 @@ def validate(request):
     if service is not None and ticket_string is not None:
         try:
             ticket = ServiceTicket.objects.get(ticket=ticket_string)
+        except ServiceTicket.DoesNotExist:
+            pass
+        else:
             username = ticket.user.username
             ticket.delete()
             return HttpResponse("yes\n%s\n" % username)
-        except Exception:
-            pass
     return HttpResponse("no\n\n")
 
 
