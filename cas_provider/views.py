@@ -1,17 +1,23 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib.auth import authenticate
-from django.contrib.auth import login as auth_login, logout as auth_logout
-from django.conf import settings
-from django.contrib import messages
+from django.views.generic import FormView
 
-from .utils import add_qs, create_service_ticket
+from .utils import add_query_params, create_service_ticket
 from .forms import LoginForm
 from .models import ServiceTicket, LoginTicket
+
+
+class LoginView(FormView):
+    template_name = 'cas/login.html'
+    success_redirect = '/accounts/profile/'
 
 
 def login(request, template_name='cas/login.html', success_redirect=None):
@@ -22,7 +28,7 @@ def login(request, template_name='cas/login.html', success_redirect=None):
     if request.user.is_authenticated():
         if service is not None:
             ticket = create_service_ticket(request.user, service)
-            return HttpResponseRedirect(add_qs(service, ticket=ticket.ticket))
+            return HttpResponseRedirect(add_query_params(service, {'ticket': ticket.ticket}))
         else:
             return HttpResponseRedirect(success_redirect)
 
@@ -44,7 +50,7 @@ def login(request, template_name='cas/login.html', success_redirect=None):
                     auth_login(request, user)
                     if service is not None:
                         ticket = create_service_ticket(user, service)
-                        return HttpResponseRedirect(add_qs(service, ticket=ticket.ticket))
+                        return HttpResponseRedirect(add_query_params(service, {'ticket': ticket.ticket}))
                     else:
                         return HttpResponseRedirect(success_redirect)
                 else:

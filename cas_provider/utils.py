@@ -1,19 +1,30 @@
 # -*- coding: utf-8 -*-
-import urllib
+from urllib import urlencode
+from urlparse import parse_qsl, urlparse, urlunparse
 
+from django.conf import settings
 from django.utils.crypto import get_random_string
+from django.utils.encoding import force_bytes
 
 from .models import ServiceTicket, LoginTicket
 
 
-def add_qs(url, **kwargs):
-    qs = urllib.urlencode(kwargs)
-    if not qs:
-        return url
-    if '?' in url:
-        return url+'?'+qs
-    else:
-        return url+'&'+qs
+def add_query_params(url, params):
+    """
+    Inject additional query parameters into an existing URL. If
+    parameters already exist with the same name, they will be
+    overwritten. Parameters with empty values are ignored. Return
+    the modified URL as a string.
+    """
+    def encode(s):
+        return force_bytes(s, settings.DEFAULT_CHARSET)
+    params = dict([(encode(k), encode(v)) for k, v in params.items() if v])
+
+    parts = list(urlparse(url))
+    query = dict(parse_qsl(parts[4]))
+    query.update(params)
+    parts[4] = urlencode(query)
+    return urlunparse(parts)
 
 
 def create_service_ticket(user, service):
